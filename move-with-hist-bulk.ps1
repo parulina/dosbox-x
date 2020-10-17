@@ -13,19 +13,17 @@ Write-Host("Target is {0}" -f $target) -ForegroundColor Green
 
 $files = Get-ChildItem -path $source -Recurse -Attributes !Directory | Resolve-Path -Relative
 
-Write-Host("About to move files...") -ForegroundColor Yellow
-
 foreach($file in $files)
 {
     $dest = "{0}{1}" -f $target, $file.Substring(1)
 
-    Write-Host("----------------------------------------") -ForegroundColor Cyan
-
-    Write-Host("Moving {0} -> {1}" -f $file, $dest) -ForegroundColor Cyan
+    Write-Host("Moving '{0}' to '{1}'" -f $file, $dest) -BackgroundColor Cyan -ForegroundColor White
     
     .\move-with-hist.ps1 $file $dest
-    
-    Write-Host("File moved") -ForegroundColor Cyan
-    
-    Write-Host("----------------------------------------") -ForegroundColor Cyan
+
+    if ($LASTEXITCODE -ne 0)
+    {
+        Write-Host("ERROR : `$LASTEXITCODE = $LASTEXITCODE") -BackgroundColor Red -ForegroundColor White
+        exit
+    }
 }
