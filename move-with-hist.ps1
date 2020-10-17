@@ -1,9 +1,11 @@
-﻿param (
+﻿# NOTE: for internal use only
+# This script moves a source file to a target file in repository,
+# but ensures its history is preserved, i.e. commits, author date.
+
+param (
     [Parameter(Mandatory=$true)][string]$source,
     [Parameter(Mandatory=$true)][string]$target
 )
-
-clear
 
 Write-Host("Source is {0}" -f $source) -ForegroundColor Green
 Write-Host("Target is {0}" -f $target) -ForegroundColor Green
@@ -45,7 +47,7 @@ foreach ($patch in $($patchs -split "`r`n"))
     & git config diff.noprefix true
     #>
 
-    & git apply --directory=$gitdir -p $dirlen "$patch"
+    & git apply --whitespace=nowarn --directory=$gitdir -p $dirlen "$patch"
     
     <# not working
     if ([string]::IsNullOrWhiteSpace($diff))
@@ -65,7 +67,7 @@ foreach ($patch in $($patchs -split "`r`n"))
     $data = "NOTE: auto-magically re-imported by HAL 9000`r`nHASH: {0} (original)" -f $hash
     $text = "[MIGRATED] {0}" -f $text
 
-    & git add $target
+    & git add -f $target
     & git commit -m "$text" -m "$data" --date="$date" --author="$mail"
 
     Remove-Item $patch
