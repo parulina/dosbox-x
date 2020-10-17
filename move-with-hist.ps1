@@ -42,24 +42,8 @@ $gitdir = $gitdir.Trim()
 $dirlen = $gitdir.Split("/").Count
 foreach ($patch in $($patchs -split "`r`n"))
 {
-    <# not working
-    $diff = & git config diff.noprefix
-    & git config diff.noprefix true
-    #>
-
-    & git apply --whitespace=nowarn --directory=$gitdir -p $dirlen "$patch"
-    
-    <# not working
-    if ([string]::IsNullOrWhiteSpace($diff))
-    {
-        & git config --unset diff.noprefix
-    }
-    else
-    {
-        & git config diff.noprefix $diff
-    }
-    #>
-
+    Write-Host("`Applying $patch".PadRight(80)) -BackgroundColor Magenta -ForegroundColor White
+ 
     $hash = (Get-Content $patch)[0].Substring(5, 40)
     $mail = (Get-Content $patch)[1].Substring(6)
     $date = (Get-Content $patch)[2].Substring(6)
@@ -67,8 +51,33 @@ foreach ($patch in $($patchs -split "`r`n"))
     $data = "NOTE: auto-magically re-imported by HAL 9000`r`nHASH: {0} (original)" -f $hash
     $text = "[MIGRATED] {0}" -f $text
 
-    & git add -f $target
-    & git commit -m "$text" -m "$data" --date="$date" --author="$mail"
+    Write-Host("Executing git apply") -BackgroundColor Green -ForegroundColor White
+    & git apply --whitespace=nowarn --directory=$gitdir -p $dirlen "$patch"
+    if ($LASTEXITCODE -ne 0)
+    {
+        Write-Host("ERROR : `$LASTEXITCODE = $LASTEXITCODE") -BackgroundColor Red -ForegroundColor White
+        exit
+    }
+            
+    Write-Host("Executing git add") -BackgroundColor Green -ForegroundColor White
+    git add -f "$target"
+    if ($LASTEXITCODE -ne 0)
+    {
+        Write-Host("ERROR : `$LASTEXITCODE = $LASTEXITCODE") -BackgroundColor Red -ForegroundColor White
+        exit
+    }
+
+    Write-Host("Executing git commit") -BackgroundColor Green -ForegroundColor White
+    Write-Host("    `$text = $text") -BackgroundColor Cyan -ForegroundColor White
+    # Write-Host("    `$data = $data") -BackgroundColor Cyan -ForegroundColor White
+    # Write-Host("    `$date = $date") -BackgroundColor Cyan -ForegroundColor White
+    # Write-Host("    `$mail = $mail") -BackgroundColor Cyan -ForegroundColor White
+    git commit -m "$text" -m "$data" --date="$date" --author="$mail"
+    if ($LASTEXITCODE -ne 0)
+    {
+        Write-Host("ERROR : `$LASTEXITCODE = $LASTEXITCODE") -BackgroundColor Red -ForegroundColor White
+        exit
+    }
 
     Remove-Item $patch
 }
