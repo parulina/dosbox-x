@@ -1038,8 +1038,6 @@ void FPU_Init() {
 	FPU_FINIT();
 }
 
-#endif
-
 //save state support
 namespace
 {
@@ -1052,3 +1050,5 @@ public:
     }
 } dummy;
 }
+#endif
+

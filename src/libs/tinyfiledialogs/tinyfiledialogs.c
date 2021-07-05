@@ -56,7 +56,7 @@ Thanks for contributions, bug corrections & thorough testing to:
 
 #if !defined(_WIN32) && ( defined(__GNUC__) || defined(__clang__) )
 #if !defined(_GNU_SOURCE)
- #define _GNU_SOURCE /* used only to resolve symbolic links. Can be commented out */
+ //#define _GNU_SOURCE /* used only to resolve symbolic links. Can be commented out */
 #endif
 #endif
 

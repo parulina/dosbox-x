@@ -63,7 +63,9 @@ typedef union {
     } l;
 #endif
     int64_t ll;
+#if C_FPU
 	MMX_reg reg_mmx;
+#endif
 } FPU_Reg;
 
 // dynamic x86 core needs this

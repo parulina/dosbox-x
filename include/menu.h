@@ -84,10 +84,10 @@ void DOSBox_SetMenu(void);
 void DOSBox_NoMenu(void);
 
 // dummy Win32 functions for less #ifdefs
-#define GetHWND() (0)
+//#define GetHWND() (0)
 #define SetMenu(a,b)
 #define DragAcceptFiles(a,b)
-#define GetMenu(a) (0)
+//#define GetMenu(a) (0)
 
 // menu.cpp replacements; the optimizer will completely remove code based on these
 #define VER_PLATFORM_WIN32_NT (1)

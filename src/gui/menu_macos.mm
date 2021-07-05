@@ -9,7 +9,7 @@
 #include "SDL_syswm.h"
 
 #if DOSBOXMENU_TYPE == DOSBOXMENU_NSMENU /* Mac OS X NSMenu / NSMenuItem handle */
-# include <MacTypes.h>
+//# include <MacTypes.h>
 # include <Cocoa/Cocoa.h>
 # include <Foundation/NSString.h>
 # include <ApplicationServices/ApplicationServices.h>
@@ -30,7 +30,7 @@ bool InitCodePage(), CodePageGuestToHostUTF8(char *d/*CROSS_LEN*/,const char *s/
 
 void GetClipboard(std::string* result) {
 	NSPasteboard* pb = [NSPasteboard generalPasteboard];
-	NSString* text = [pb stringForType:NSPasteboardTypeString];
+	NSString* text = [pb stringForType:NSStringPboardType];
 	*result = std::string([text UTF8String]);
 }
 
@@ -546,8 +546,8 @@ int my_quartz_match_window_to_monitor(CGDirectDisplayID *new_id,NSWindow *wnd) {
 // NTS: This did not appear until Mojave, and some followers on Github prefer to compile for somewhat older versions of OS X
 //      NSPoint pt = [wnd convertPointToScreen:NSMakePoint(rct.size.width / 2, rct.size.height / 2)];
 // NTS: convertRectToScreen however is documented to exist since 10.7, unless Apple got that wrong too...
-        NSPoint pt = [wnd convertRectToScreen:NSMakeRect(rct.size.width / 2, rct.size.height / 2, 0, 0)].origin; /* x,y,w,h */
-
+        //NSPoint pt = [wnd convertToScreen:NSMakeRect(rct.size.width / 2, rct.size.height / 2, 0, 0)].origin; /* x,y,w,h */
+        CGPoint pt = CGPointMake(rct.origin.x, rct.origin.y);
         {
             /* Eugh this ugliness wouldn't be necessary if we didn't have to fudge relative to primary display. */
             CGRect prct = CGDisplayBounds(CGMainDisplayID());
@@ -588,7 +588,6 @@ void qz_set_match_monitor_cb(void) {
 // after this function is done.
 std::string macosx_prompt_folder(const char *default_folder) {
     NSOpenPanel *panel = [NSOpenPanel openPanel];
-    NSModalResponse r;
     std::string res;
 
     [panel setPrompt:@"Choose"];
@@ -599,11 +598,10 @@ std::string macosx_prompt_folder(const char *default_folder) {
     [panel setCanCreateDirectories:true]; /* sure, why not? */
     if (default_folder != NULL) [panel setDirectoryURL:[NSURL fileURLWithPath:[NSString stringWithFormat:@"%s",default_folder]]];
 
-    r = [panel runModal];
-    if (r == NSFileHandlingPanelOKButton) {
+    if ([panel runModal] == NSOKButton) {
         NSArray *urls = [panel URLs];
         if ([urls count] > 0) {
-            NSURL *url = urls[0];
+            NSURL *url = [urls objectAtIndex: 0];
             if ([[url scheme] isEqual: @"file"]) {
                 /* NTS: /path/to/file is returned as file:///path/to/file */
                 res = [[url relativePath] UTF8String];

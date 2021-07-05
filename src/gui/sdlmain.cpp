@@ -256,7 +256,7 @@ extern PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
 #endif
 
 #ifdef MACOSX
-#include <CoreGraphics/CoreGraphics.h>
+//#include <CoreGraphics/CoreGraphics.h>
 extern bool has_touch_bar_support;
 bool macosx_detect_nstouchbar(void);
 void macosx_init_touchbar(void);
@@ -1989,6 +1989,13 @@ SDL_Window* GFX_SetSDLWindowMode(uint16_t width, uint16_t height, SCREEN_TYPES s
             SDL_DestroyWindow(sdl.window);
         }
 
+	if(screenType == SCREEN_OPENGL) {
+	    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+	    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
+	    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+	    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	}
         sdl.window = SDL_CreateWindow("",
                                       SDL_WINDOWPOS_UNDEFINED_DISPLAY(sdl.displayNumber?sdl.displayNumber-1:0),
                                       SDL_WINDOWPOS_UNDEFINED_DISPLAY(sdl.displayNumber?sdl.displayNumber-1:0),
@@ -2025,7 +2032,7 @@ SDL_Window* GFX_SetSDLWindowMode(uint16_t width, uint16_t height, SCREEN_TYPES s
      * if one is not interested in scaling.
      * On Android, desktop res is the only way.
      */
-    SDL_SetWindowResizable(sdl.window, SDL2_resize_enable ? SDL_TRUE : SDL_FALSE);
+    //SDL_SetWindowResizable(sdl.window, SDL2_resize_enable ? SDL_TRUE : SDL_FALSE);
     if (GFX_IsFullscreen()) {
         SDL_DisplayMode displayMode;
         SDL_GetWindowDisplayMode(sdl.window, &displayMode);
@@ -2062,8 +2069,8 @@ void GFX_SetResizeable(bool enable) {
     if (SDL2_resize_enable != enable) {
         SDL2_resize_enable = enable;
 
-        if (sdl.window != NULL)
-            SDL_SetWindowResizable(sdl.window, SDL2_resize_enable ? SDL_TRUE : SDL_FALSE);
+        //if (sdl.window != NULL)
+            //SDL_SetWindowResizable(sdl.window, SDL2_resize_enable ? SDL_TRUE : SDL_FALSE);
     }
 }
 

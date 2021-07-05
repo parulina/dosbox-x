@@ -201,10 +201,9 @@ public:
 
 	class CFileInfo {
 	public:
-		CFileInfo(void) {
+		CFileInfo(void) : id(MAX_OPENDIRS) {
 			orgname[0] = shortname[0] = 0;
 			isOverlayDir = isDir = false;
-			id = MAX_OPENDIRS;
 			nextEntry = shortNr = 0;
 		}
 		~CFileInfo(void) {

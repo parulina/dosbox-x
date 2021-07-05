@@ -29,8 +29,7 @@ void __PHYSFS_platformDeinit(void)
 
 char *__PHYSFS_platformCalcBaseDir(const char *argv0)
 {
-    @autoreleasepool
-    {
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
         NSString *path = [[NSBundle mainBundle] bundlePath];
         BAIL_IF(!path, PHYSFS_ERR_OS_ERROR, NULL);
         size_t len = [path lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
@@ -39,15 +38,14 @@ char *__PHYSFS_platformCalcBaseDir(const char *argv0)
         [path getCString:retval maxLength:len+1 encoding:NSUTF8StringEncoding];
         retval[len] = '/';
         retval[len+1] = '\0';
-        return retval;  /* whew. */
-    } /* @autoreleasepool */
+    [pool drain];
+    return retval;  /* whew. */
 } /* __PHYSFS_platformCalcBaseDir */
 
 
 char *__PHYSFS_platformCalcPrefDir(const char *org, const char *app)
 {
-    @autoreleasepool
-    {
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, TRUE);
         BAIL_IF(!paths, PHYSFS_ERR_OS_ERROR, NULL);
         NSString *path = (NSString *) [paths objectAtIndex:0];
@@ -58,8 +56,8 @@ char *__PHYSFS_platformCalcPrefDir(const char *org, const char *app)
         BAIL_IF(!retval, PHYSFS_ERR_OUT_OF_MEMORY, NULL);
         [path getCString:retval maxLength:len+1 encoding:NSUTF8StringEncoding];
         snprintf(retval + len, applen + 3, "/%s/", app);
-        return retval;  /* whew. */
-    } /* @autoreleasepool */
+    [pool drain];
+    return retval;  /* whew. */
 } /* __PHYSFS_platformCalcPrefDir */
 
 

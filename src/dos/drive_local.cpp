@@ -26,6 +26,19 @@
 #include <time.h>
 #include <errno.h>
 #include <limits.h>
+#if defined(MACOSX)
+#define _DARWIN_C_SOURCE
+#endif
+#ifndef WIN32
+#include <utime.h>
+#include <sys/file.h>
+#else
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/utime.h>
+#include <sys/locking.h>
+#include <sys/time.h>
+#endif
 
 #include "dosbox.h"
 #include "dos_inc.h"
@@ -2170,11 +2183,11 @@ bool localFile::Close() {
         // NTS: Do not attempt futime, Linux doesn't have it.
         //      Do not attempt futimes, Linux man pages LIE about having it. It's even there in the freaking header, but not recognized!
         //      Use futimens. Modern stuff should have it. [https://pubs.opengroup.org/onlinepubs/9699919799/functions/futimens.html]
-        struct timespec ftsp[2];
+        struct timeval ftsp[2];
         ftsp[0].tv_sec =  ftsp[1].tv_sec =  mktime(&tim);
-        ftsp[0].tv_nsec = ftsp[1].tv_nsec = 0;
+        ftsp[0].tv_usec = ftsp[1].tv_usec = 0;
 
-        if (futimens(fileno(fhandle), ftsp)) {
+        if (futimes(fileno(fhandle), ftsp)) {
             extern int errno; 
             LOG_MSG("Set time failed (%s)", strerror(errno));
         }

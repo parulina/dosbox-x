@@ -552,8 +552,8 @@ GLhandleARB m_hProgramObject   = (GLhandleARB)NULL;
 
 void ogl_printInfoLog(GLhandleARB obj)
 {
-    int infologLength = 0;
-    int charsWritten  = 0;
+    GLint infologLength = 0;
+    GLint charsWritten  = 0;
 
     glGetObjectParameterivARB(obj, GL_OBJECT_INFO_LOG_LENGTH_ARB, &infologLength);
 
@@ -985,7 +985,7 @@ void ogl_shaders(const poly_extra_data *extra) {
 		glGetObjectParameterivARB(m_hVertexShader, GL_OBJECT_COMPILE_STATUS_ARB, &res);
 		if(res == 0) {
 			char infobuffer[1000];
-			int infobufferlen = 0;
+			GLint infobufferlen = 0;
 			glGetInfoLogARB(m_hVertexShader, 999, &infobufferlen, infobuffer);
 			infobuffer[infobufferlen] = 0;
 			ogl_printInfoLog(m_hVertexShader);
@@ -1847,7 +1847,7 @@ void voodoo_ogl_leave(bool leavemode) {
 				delete t->second.ids;
 				t->second.ids = NULL;
 			} else {
-				glDeleteTextures(1,&t->second.current_id);
+				glDeleteTextures(1, (GLuint*)&t->second.current_id);
 			}
 		}
 		if (!textures[j].empty()) textures[j].clear();
